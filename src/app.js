@@ -148,17 +148,43 @@ const {auth} = require("./middlewares/auth")
 
 // to avoid this redundancy in authorisation -> the concept of middleware came into existence
 
-app.use("/admin", auth)
+// app.use("/admin", auth)
 
-app.get("/admin/profile", (req, res, next) => {
-    res.send("here are your profile dear")
-  }
-);
+// app.get("/admin/profile", (req, res, next) => {
+//     res.send("here are your profile dear")
+//   }
+// );
 
-//is catch wale ko upr likhenge to bekaar ho jaega ...kyunki profile wale me bhi catch wala response send hoga
-app.use("/admin/*", (req, res) => {
-  res.status(404).send("yeh page exist nahi karta, kahin aur jao!");
-});
+// //is catch wale ko upr likhenge to bekaar ho jaega ...kyunki profile wale me bhi catch wala response send hoga
+// app.use("/admin/*", (req, res) => {
+//   res.status(404).send("yeh page exist nahi karta, kahin aur jao!");
+// });
+//########################################## -> Error Handling <- ####################################################################
+
+app.get("/getUserData", (req,res) =>{
+    // throw new Error("this is an error");
+    // res.send("User  Data   Sent");
+    try{
+    //   throw new Error("this is an error");
+      console.log("Error caught in try block ") //this didnot run because as soon as throw get caught in try block it goes on the catch block to tackle this
+    }
+    catch{
+        res.status(500).send("Unable to fetch the user data due to internal security error ")
+
+    }
+})
+
+// app.use("/", (err,req, res, next) => {
+//     if(err){
+//         //log your error from here 
+//         res.status(500).send("Something went wrong");
+//     }
+
+// })
+
+
+
+
 
 
 //##############################################################################################################
