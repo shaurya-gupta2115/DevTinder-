@@ -4,6 +4,9 @@
 const express = require("express");
 const app = express();
 
+//importing auth from middlewares
+const {auth} = require("./middlewares/auth")
+
 //##############################################################################################################
 
 // app.use("/help", (req, res) => {
@@ -99,20 +102,64 @@ const app = express();
 
 //################################# -> Middlewares and Error Handlers <- #############################################################################
 
-app.use(
-  "/user",
-  (req, res,next) => {
-    //nothing written //api keep on sending req but there is no response
-    console.log("Handling the route...");
-    // res.send("Response!!");
-    next()
-  },
-  (req, res,next) => {
-    //nothing written //api keep on sending req but there is no response
-    console.log("Handling the 2ndroute...");
-    res.send("2nd Response!!");
+// app.use(
+//   "/user",
+//   (req, res,next) => {
+//     //nothing written //api keep on sending req but there is no response
+//     console.log("Handling the route...");
+//     // res.send("Response!!");
+//     next()
+//   },
+//   (req, res,next) => {
+//     //nothing written //api keep on sending req but there is no response
+//     console.log("Handling the 2ndroute...");
+//     res.send("2nd Response!!");
+//     next()
+//   },
+//   (req,res,next) => {
+//     res.send("3rd response")
+//   }
+// );
+
+//######################################## -> APPLYING MIDDLEWARE CONCEPT <- ####################################################################################### 
+
+// app.get("/admin/photos", (req, res, next) => {
+//     const token = "xyz";
+//     const isAdminAuthorised = (token === "xyz");
+//     if(isAdminAuthorised){
+//         res.send("here are your photos dear")
+//     }
+//     else{
+//         res.send("pehle authorisation krke ao firse dekhna photo")
+//     }
+// })
+
+
+// app.get("/admin/profile", (req, res, next) => {
+//   const token = "xyzdfsd";
+//   const isAdminAuthorised = token === "xyz";
+//   if (isAdminAuthorised) {
+//     res.send("here are your profile dear");
+//   } else {
+//     res.send("pehle authorisation krke ao firse dekhna profile");
+//   }
+// });
+
+
+// to avoid this redundancy in authorisation -> the concept of middleware came into existence
+
+app.use("/admin", auth)
+
+app.get("/admin/profile", (req, res, next) => {
+    res.send("here are your profile dear")
   }
 );
+
+//is catch wale ko upr likhenge to bekaar ho jaega ...kyunki profile wale me bhi catch wala response send hoga
+app.use("/admin/*", (req, res) => {
+  res.status(404).send("yeh page exist nahi karta, kahin aur jao!");
+});
+
 
 //##############################################################################################################
 
