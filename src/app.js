@@ -5,7 +5,7 @@ const express = require("express");
 const app = express();
 
 //importing auth from middlewares
-const {auth} = require("./middlewares/auth")
+// const {auth} = require("./middlewares/auth")
 
 //##############################################################################################################
 
@@ -62,7 +62,7 @@ const {auth} = require("./middlewares/auth")
 //   res.send("first/first get is executed");
 // });
 
-//############################################################################################################################### 
+//###############################################################################################################################
 
 //here we are doing different different types in which we can name the adrees like "ab+c", "ab*c", "a(bc)+d" , "/ab/" etc
 
@@ -121,7 +121,7 @@ const {auth} = require("./middlewares/auth")
 //   }
 // );
 
-//######################################## -> APPLYING MIDDLEWARE CONCEPT <- ####################################################################################### 
+//######################################## -> APPLYING MIDDLEWARE CONCEPT <- #######################################################################################
 
 // app.get("/admin/photos", (req, res, next) => {
 //     const token = "xyz";
@@ -134,7 +134,6 @@ const {auth} = require("./middlewares/auth")
 //     }
 // })
 
-
 // app.get("/admin/profile", (req, res, next) => {
 //   const token = "xyzdfsd";
 //   const isAdminAuthorised = token === "xyz";
@@ -144,7 +143,6 @@ const {auth} = require("./middlewares/auth")
 //     res.send("pehle authorisation krke ao firse dekhna profile");
 //   }
 // });
-
 
 // to avoid this redundancy in authorisation -> the concept of middleware came into existence
 
@@ -176,14 +174,13 @@ const {auth} = require("./middlewares/auth")
 
 // app.use("/", (err,req, res, next) => {
 //     if(err){
-//         //log your error from here 
+//         //log your error from here
 //         res.status(500).send("Something went wrong");
 //     }
 
 // })
 
 //#######################################  --> Database Started <-- #######################################################################
-
 
 //refer database.js for notes reference
 
@@ -194,6 +191,36 @@ const {auth} = require("./middlewares/auth")
 //instead of going to match route further .... hence the order or routing matters in this
 
 // create structure which says port 7777 to listen and give a call back to show in the terminal panel
-app.listen(7777, () => {
-  console.log("server is running and listening the request...");
+
+// Working with mongoose started from here :     ###################################################################
+
+const { connectDB } = require("./config/database");
+const User = require("./model/user");
+
+app.post("/signup", async (req, res) => {
+  const user = new User({
+    firstName: "Sanskriti",
+    lastName: "Jaiswal",
+    email: "sansu2125@gmail.com ",
+    mobileNumber: 9842323717,
+  });
+
+  try {
+    await user.save();
+    res.send("Yes , data is successfuly stored at the databse ...welcome now");
+  } catch (err) {
+    res.status(500).send("Something went wrong. Try again... ")
+  }
 });
+
+connectDB()
+  .then(() => {
+    console.log("database connected established succesfully ");
+    //here we connected database first and then server started listening it after
+    app.listen(7777, () => {
+      console.log("server is running and listening the request...");
+    });
+  })
+  .catch((err) => {
+    console.log("Error while connecting to get the database ");
+  });
