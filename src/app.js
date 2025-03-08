@@ -194,23 +194,32 @@ const app = express();
 
 // Working with mongoose started from here :     ###################################################################
 
-const { connectDB } = require("./config/database");
+const { connectDB } = require("./config/database"); //instead connectDB , we destructured  to { connectDB }
+
 const User = require("./model/user");
 
+app.use(express.json()); //this will help me to convert json file into js object which i can use further 
+
 app.post("/signup", async (req, res) => {
-  const user = new User({
-    firstName: "Sanskriti",
-    lastName: "Jaiswal",
-    email: "sansu2125@gmail.com ",
-    mobileNumber: 9842323717,
-  });
+  // console.log(req.body)
+
+  // const user = new User({
+  //   firstName: "Sanskriti",
+  //   lastName: "Jaiswal",
+  //   email: "sansu2125@gmail.com ",
+  //   mobileNumber: 9842323717,
+  // });
+
+  const user = new User(req.body);
+  
 
   try {
     await user.save();
     res.send("Yes , data is successfuly stored at the databse ...welcome now");
   } catch (err) {
-    res.status(500).send("Something went wrong. Try again... ")
+    res.status(400).send("Something went wrong. Try again... ");
   }
+
 });
 
 connectDB()
