@@ -161,18 +161,18 @@ const {auth} = require("./middlewares/auth")
 // });
 //########################################## -> Error Handling <- ####################################################################
 
-app.get("/getUserData", (req,res) =>{
-    // throw new Error("this is an error");
-    // res.send("User  Data   Sent");
-    try{
-    //   throw new Error("this is an error");
-      console.log("Error caught in try block ") //this didnot run because as soon as throw get caught in try block it goes on the catch block to tackle this
-    }
-    catch{
-        res.status(500).send("Unable to fetch the user data due to internal security error ")
+// app.get("/getUserData", (req,res) =>{
+//     // throw new Error("this is an error");
+//     // res.send("User  Data   Sent");
+//     try{
+//     //   throw new Error("this is an error");
+//       console.log("Error caught in try block ") //this didnot run because as soon as throw get caught in try block it goes on the catch block to tackle this
+//     }
+//     catch{
+//         res.status(500).send("Unable to fetch the user data due to internal security error ")
 
-    }
-})
+//     }
+// })
 
 // app.use("/", (err,req, res, next) => {
 //     if(err){
@@ -182,10 +182,10 @@ app.get("/getUserData", (req,res) =>{
 
 // })
 
+//#######################################  --> Database Started <-- #######################################################################
 
 
-
-
+//refer database.js for notes reference
 
 //##############################################################################################################
 
