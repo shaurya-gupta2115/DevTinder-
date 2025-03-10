@@ -197,8 +197,9 @@ const app = express();
 const { connectDB } = require("./config/database"); //instead connectDB , we destructured  to { connectDB }
 
 const User = require("./model/user");
+const { Model } = require("mongoose");
 
-app.use(express.json()); //this will help me to convert json file into js object which i can use further 
+app.use(express.json()); //this will help me to convert json file into js object which i can use further
 
 app.post("/signup", async (req, res) => {
   // console.log(req.body)
@@ -211,7 +212,6 @@ app.post("/signup", async (req, res) => {
   // });
 
   const user = new User(req.body);
-  
 
   try {
     await user.save();
@@ -219,7 +219,40 @@ app.post("/signup", async (req, res) => {
   } catch (err) {
     res.status(400).send("Something went wrong. Try again... ");
   }
+});
 
+app.get("/user", async (req, res) => {
+  try {
+    const userEmail = req.body.email;
+    // console.log(userEmail);
+    const users = await User.find({ email: userEmail });
+
+    if (users.length === 0) {
+      res.send("User Not Found");
+      console.log("User info displayed to client");
+    } else {
+      res.send(users);
+      console.log("User info displayed to client");
+    }
+  } catch (err) {
+    res.status(400).send("Something went wrong.  ");
+  }
+});
+
+app.get("/feed", async (req, res) => {
+  try {
+    const allFeed = await User.find({});
+
+    if (allFeed.length === 0) {
+      res.send("User Not Found");
+      console.log("User info displayed to client");
+    } else {
+      res.send(allFeed);
+      console.log("User info displayed to client");
+    }
+  } catch (err) {
+    res.status(400).send("Something went wrong.");
+  }
 });
 
 connectDB()
