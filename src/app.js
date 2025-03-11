@@ -198,6 +198,7 @@ const { connectDB } = require("./config/database"); //instead connectDB , we des
 
 const User = require("./model/user");
 const { Model } = require("mongoose");
+const { ReturnDocument } = require("mongodb");
 
 app.use(express.json()); //this will help me to convert json file into js object which i can use further
 
@@ -215,7 +216,7 @@ app.post("/signup", async (req, res) => {
 
   try {
     await user.save();
-    res.send("Yes , data is successfuly stored at the databse ...welcome now");
+    res.send("Yes , data is successfuly stored at the databse ...");
   } catch (err) {
     res.status(400).send("Something went wrong. Try again... ");
   }
@@ -223,17 +224,21 @@ app.post("/signup", async (req, res) => {
 
 app.get("/user", async (req, res) => {
   try {
-    const userEmail = req.body.email;
-    // console.log(userEmail);
-    const users = await User.find({ email: userEmail });
+    const userId = req.body._id;
+    const user = await User.findById(userId);
+    res.send(user); //getting user by using id and hence using fn findById
 
-    if (users.length === 0) {
-      res.send("User Not Found");
-      console.log("User info displayed to client");
-    } else {
-      res.send(users);
-      console.log("User info displayed to client");
-    }
+    // const userEmail = req.body.email;
+    // console.log(userEmail);
+    // const users = await User.find({ email: userEmail }); //getting user using find function
+
+    // if (users.length === 0) {
+    //   res.send("User Not Found - Check data parameter to get filter");
+    //   console.log("User info displayed to client");
+    // } else {
+    //   res.send(users);
+    //   console.log("User info displayed to client");
+    // }
   } catch (err) {
     res.status(400).send("Something went wrong.  ");
   }
@@ -252,6 +257,43 @@ app.get("/feed", async (req, res) => {
     }
   } catch (err) {
     res.status(400).send("Something went wrong.");
+  }
+});
+
+app.delete("/user", async (req, res) => {
+  const userId = req.body._id;
+  try {
+    const user = await User.findByIdAndDelete(userId);
+    res.send("User is succesfully deleted using userId ");
+  } catch (err) {
+    res.send("Error in deleting the user ");
+  }
+});
+
+// app.patch("/user", async(req, res) => {
+//   const data = req.body
+//   const userId = req.body._id;
+
+//   try {
+
+//     const update = await User.findByIdAndUpdate({_id: userId}, data)
+//     res.send("Update is being made to the document ")
+//   } catch (err) {
+//     res.status(400).send("Unable to update the documnet ")
+//   }
+// })
+
+app.patch("/user", async (req, res) => {
+  const emailId = req.body.email;
+  const data = req.body;
+  try {
+    const update = await User.findOneAndUpdate({ email: emailId }, data, {
+      returnDocument: "after",
+    });
+    console.log(update);
+    res.send("Data updated using e-mail id");
+  } catch (err) {
+    res.send("Unable to update data using e-mailid . Try again ");
   }
 });
 

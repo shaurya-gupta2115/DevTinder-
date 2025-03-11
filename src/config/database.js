@@ -72,7 +72,7 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   await mongoose.connect(
-    "mongodb+srv://devtinder:devtinder@cluster0.ggrv0.mongodb.net/devTinder"
+    "mongodb+srv://devtinder:devtinder@cluster0.ggrv0.mongodb.net/devTinder" //devTinder is that database and users is a collection which contains various documents 
   );
 };
 
