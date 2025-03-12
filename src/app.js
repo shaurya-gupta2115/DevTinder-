@@ -218,7 +218,7 @@ app.post("/signup", async (req, res) => {
     await user.save();
     res.send("Yes , data is successfuly stored at the databse ...");
   } catch (err) {
-    res.status(400).send("Something went wrong. Try again... ");
+    res.status(400).send("Update Failed: ", err.message);
   }
 });
 
@@ -289,6 +289,7 @@ app.patch("/user", async (req, res) => {
   try {
     const update = await User.findOneAndUpdate({ email: emailId }, data, {
       returnDocument: "after",
+      timestamps: false //update krne me timestamps me updated wala section me change nhi hoga timings me
     });
     console.log(update);
     res.send("Data updated using e-mail id");
