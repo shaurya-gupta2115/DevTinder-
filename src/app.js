@@ -309,77 +309,77 @@ app.patch("/user/:userId", async (req, res) => {
   }
 });
 
-// app.patch("/user/:emailId", async (req, res) => {
-//   // const emailId = req.body.email;
+app.patch("/user/:emailId", async (req, res) => {
+  // const emailId = req.body.email;
 
-//   const emailId = req.params?.emailId;
-//   const data = req.body;
+  const emailId = req.params?.emailId;
+  const data = req.body;
 
-//   console.log("Received Request for:", emailId, data);
+  console.log("Received Request for:", emailId, data);
 
-//   try {
-//     const ALLOWED_ITEMS = [
-//       "photoUrl",
-//       "about",
-//       "gender",
-//       "firstName",
-//       "lastName",
-//       "mobileNumber",
-//       "age",
-//       "skills",
-//     ];
+  try {
+    const ALLOWED_ITEMS = [
+      "photoUrl",
+      "about",
+      "gender",
+      "firstName",
+      "lastName",
+      "mobileNumber",
+      "age",
+      "skills",
+    ];
 
-//     //now we will search each key of the data we recieve from the client and check whether the things which are projected to changed are allowed or not ! i.e. they are present to allowed item list ... it generally return the true value if they are good
-//     // updatableItems = isUpdateAllowed
+    //now we will search each key of the data we recieve from the client and check whether the things which are projected to changed are allowed or not ! i.e. they are present to allowed item list ... it generally return the true value if they are good
+    // updatableItems = isUpdateAllowed
 
-//     const userExists = await User.findOne({ email: emailId });
-//     // console.log("User Found:", userExists);
+    const userExists = await User.findOne({ email: emailId });
+    // console.log("User Found:", userExists);
 
-//     const isUpdateAllowed = Object.keys(data).every((k) =>
-//       ALLOWED_ITEMS.includes(k)
-//     );
-//     // if (!isUpdateAllowed) {
-//     //   throw new Error("- Update is not allowed");
-//     // }
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      ALLOWED_ITEMS.includes(k)
+    );
+    // if (!isUpdateAllowed) {
+    //   throw new Error("- Update is not allowed");
+    // }
 
-//     if (!isUpdateAllowed) {
-//       return res
-//         .status(400)
-//         .json({ message: "Update is not allowed for some fields." });
-//     }
+    if (!isUpdateAllowed) {
+      return res
+        .status(400)
+        .json({ message: "Update is not allowed for some fields." });
+    }
 
-//     // if (data?.skills.length > 10) {
-//     //   throw new Error("Skills cannot be greater than 10");
-//     // }
+    // if (data?.skills.length > 10) {
+    //   throw new Error("Skills cannot be greater than 10");
+    // }
 
-//     // console.log(User);
+    // console.log(User);
 
-//     const update = await User.findOneAndUpdate(
-//       { email: emailId },
-//       { $set: data },
-//       {
-//         returnDocument: "after",
-//         runValidators: true,
-//         timestamps: true, //update krne me timestamps me updated wala section me change nhi hoga timings me
-//       }
-//     );
+    const update = await User.findOneAndUpdate(
+      { email: emailId },
+      { $set: data },
+      {
+        returnDocument: "after",
+        runValidators: true,
+        timestamps: true, //update krne me timestamps me updated wala section me change nhi hoga timings me
+      }
+    );
 
-//     // console.log(update);
+    // console.log(update);
 
-//     //if during finding the User using email id ...if we are unable to find any user then we have to give msg that user doesn't found
-//     if (!update) {
-//       return res
-//         .status(404)
-//         .json({ message: "User not found with this email." });
-//     }
+    //if during finding the User using email id ...if we are unable to find any user then we have to give msg that user doesn't found
+    if (!update) {
+      return res
+        .status(404)
+        .json({ message: "User not found with this email." });
+    }
 
-//     res.send("Data updated using e-mail id");
-//   } catch (err) {
-//     res.send(
-//       "Unable to update data using e-mailid . Unable to go into try block  "
-//     );
-//   }
-// });
+    res.send("Data updated using e-mail id");
+  } catch (err) {
+    res.send(
+      "Unable to update data using e-mailid . Unable to go into try block  "
+    );
+  }
+});
 
 connectDB()
   .then(() => {
