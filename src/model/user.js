@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 //defing the user  Schema
 
@@ -22,6 +23,11 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       unique: true,
       trim: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("this is not valid e-mail address " + value);
+        }
+      },
     },
     gender: {
       type: String,
@@ -40,6 +46,12 @@ const userSchema = new mongoose.Schema(
     },
     skills: {
       type: [String],
+      validate: {
+        validator: function (skillsArray) {
+          return skillsArray.length <= 10;
+        },
+        message: "A user can have atmost 10 skills together",
+      },
     },
     about: {
       type: String,
@@ -48,6 +60,11 @@ const userSchema = new mongoose.Schema(
     photoUrl: {
       type: String,
       default: "https://geographyandyou.com/images/user-profile.png",
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error("The url entered is - invalid ");
+        }
+      },
     },
   },
   {

@@ -270,37 +270,120 @@ app.delete("/user", async (req, res) => {
   }
 });
 
-// app.patch("/user", async(req, res) => {
-//   const data = req.body
-//   const userId = req.body._id;
-
-//   try {
-
-//     const update = await User.findByIdAndUpdate({_id: userId}, data)
-//     res.send("Update is being made to the document ")
-//   } catch (err) {
-//     res.status(400).send("Unable to update the documnet ")
-//   }
-// })
-
-app.patch("/user", async (req, res) => {
-  const emailId = req.body.email;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params?.userId;
   const data = req.body;
+
   try {
-    const update = await User.findOneAndUpdate({ email: emailId }, data, {
+    //applying checks to avoid manipulation of those items which should not be allowed to get change
+    const ALLOWED_ITEMS = [
+      "photoUrl",
+      "about",
+      "gender",
+      "firstName",
+      "lastName",
+      "mobileNumber",
+      "skills",
+    ];
+    //now we will search each key of the data we recieve from the client and check whether the things which are projected to changed are allowed or not ! i.e. they are present to allowed item list ... it generally return the true value if they are good
+    // updatableItems = isUpdateAllowed
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      ALLOWED_ITEMS.includes(k)
+    );
+    if (!isUpdateAllowed) {
+      throw new Error("- Update is not allowed");
+    }
+
+    const update = await User.findByIdAndUpdate({ _id: userId }, data, {
       returnDocument: "after",
-      timestamps: false //update krne me timestamps me updated wala section me change nhi hoga timings me
+      timestamps: false,
+      //update krne me timestamps me updated wala section me change nhi hoga timings me
+      runValidators: true,
     });
-    console.log(update);
-    res.send("Data updated using e-mail id");
+    
+    // console.log(update);
+
+    res.send("Data updated using Id ");
   } catch (err) {
-    res.send("Unable to update data using e-mailid . Try again ");
+    res.status(400).send("Unable to update the documnet " + err.message);
   }
 });
 
+// app.patch("/user/:emailId", async (req, res) => {
+//   // const emailId = req.body.email;
+
+//   const emailId = req.params?.emailId;
+//   const data = req.body;
+
+//   console.log("Received Request for:", emailId, data);
+
+//   try {
+//     const ALLOWED_ITEMS = [
+//       "photoUrl",
+//       "about",
+//       "gender",
+//       "firstName",
+//       "lastName",
+//       "mobileNumber",
+//       "age",
+//       "skills",
+//     ];
+
+//     //now we will search each key of the data we recieve from the client and check whether the things which are projected to changed are allowed or not ! i.e. they are present to allowed item list ... it generally return the true value if they are good
+//     // updatableItems = isUpdateAllowed
+
+//     const userExists = await User.findOne({ email: emailId });
+//     // console.log("User Found:", userExists);
+
+//     const isUpdateAllowed = Object.keys(data).every((k) =>
+//       ALLOWED_ITEMS.includes(k)
+//     );
+//     // if (!isUpdateAllowed) {
+//     //   throw new Error("- Update is not allowed");
+//     // }
+
+//     if (!isUpdateAllowed) {
+//       return res
+//         .status(400)
+//         .json({ message: "Update is not allowed for some fields." });
+//     }
+
+//     // if (data?.skills.length > 10) {
+//     //   throw new Error("Skills cannot be greater than 10");
+//     // }
+
+//     // console.log(User);
+
+//     const update = await User.findOneAndUpdate(
+//       { email: emailId },
+//       { $set: data },
+//       {
+//         returnDocument: "after",
+//         runValidators: true,
+//         timestamps: true, //update krne me timestamps me updated wala section me change nhi hoga timings me
+//       }
+//     );
+
+//     // console.log(update);
+
+//     //if during finding the User using email id ...if we are unable to find any user then we have to give msg that user doesn't found
+//     if (!update) {
+//       return res
+//         .status(404)
+//         .json({ message: "User not found with this email." });
+//     }
+
+//     res.send("Data updated using e-mail id");
+//   } catch (err) {
+//     res.send(
+//       "Unable to update data using e-mailid . Unable to go into try block  "
+//     );
+//   }
+// });
+
 connectDB()
   .then(() => {
-    console.log("database connected established succesfully ");
+    console.log("Database connection established Succesfully ");
     //here we connected database first and then server started listening it after
     app.listen(7777, () => {
       console.log("server is running and listening the request...");
