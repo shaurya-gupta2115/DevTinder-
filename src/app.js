@@ -212,6 +212,8 @@ app.post("/signup", async (req, res) => {
   //   mobileNumber: 9842323717,
   // });
 
+
+
   const user = new User(req.body);
 
   try {
@@ -284,6 +286,7 @@ app.patch("/user/:userId", async (req, res) => {
       "lastName",
       "mobileNumber",
       "skills",
+      "password"
     ];
     //now we will search each key of the data we recieve from the client and check whether the things which are projected to changed are allowed or not ! i.e. they are present to allowed item list ... it generally return the true value if they are good
     // updatableItems = isUpdateAllowed
@@ -299,6 +302,7 @@ app.patch("/user/:userId", async (req, res) => {
       timestamps: false,
       //update krne me timestamps me updated wala section me change nhi hoga timings me
       runValidators: true,
+      new: true, // Return updated document
     });
 
     // console.log(update);

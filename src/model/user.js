@@ -66,6 +66,18 @@ const userSchema = new mongoose.Schema(
         }
       },
     },
+    password: {
+      type: String,
+      required: true,
+      minlength: 8,
+      validate(value) {
+        if(!validator.isStrongPassword(value)){
+          throw new Error(
+            "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+          );
+        }
+      },
+    },
   },
   {
     timestamps: true,
