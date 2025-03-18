@@ -199,12 +199,12 @@ const { connectDB } = require("./config/database"); //instead connectDB , we des
 const User = require("./model/user");
 const { Model } = require("mongoose");
 const { ReturnDocument } = require("mongodb");
+const { validateSignUpData } = require("./utils/validation");
 
 app.use(express.json()); //this will help me to convert json file into js object which i can use further
 
 app.post("/signup", async (req, res) => {
   // console.log(req.body)
-
   // const user = new User({
   //   firstName: "Sanskriti",
   //   lastName: "Jaiswal",
@@ -212,15 +212,20 @@ app.post("/signup", async (req, res) => {
   //   mobileNumber: 9842323717,
   // });
 
-
-
-  const user = new User(req.body);
-
   try {
+
+    //validation of data from the signup given by the user
+    validateSignUpData(req);
+
+    //encrypting the password entered by the user
+    // we use bcrypt algorithm to encrypt the password
+
+    const user = new User(req.body);
+    
     await user.save();
     res.send("Yes , data is successfuly stored at the databse ...");
   } catch (err) {
-    res.status(400).send("Update Failed: ", err.message);
+    res.status(400).send("Data Failed to store: " + err.message);
   }
 });
 
@@ -242,7 +247,7 @@ app.get("/user", async (req, res) => {
     //   console.log("User info displayed to client");
     // }
   } catch (err) {
-    res.status(400).send("Something went wrong.  ");
+    res.status(400).send("ERROR :" + err.message);
   }
 });
 
@@ -286,7 +291,7 @@ app.patch("/user/:userId", async (req, res) => {
       "lastName",
       "mobileNumber",
       "skills",
-      "password"
+      "password",
     ];
     //now we will search each key of the data we recieve from the client and check whether the things which are projected to changed are allowed or not ! i.e. they are present to allowed item list ... it generally return the true value if they are good
     // updatableItems = isUpdateAllowed
