@@ -213,21 +213,59 @@ app.post("/signup", async (req, res) => {
   // });
 
   try {
-
     //validation of data from the signup given by the user
     validateSignUpData(req);
+
+    // extraction the data from the dataset gained from the req body
+    const { firstName, lastName, mobileNumber, email, age, gender, password } =
+      req.body;
 
     //encrypting the password entered by the user
     // we use bcrypt algorithm to encrypt the password
 
-    const user = new User(req.body);
-    
+    const bcrypt = require("bcrypt"); //module imported
+
+    // bcrypt.hash(password, 10, function (err, hashedPassword) {
+    //   if (err) {
+    //     console.log("error generating the hash function ");
+    //   }
+    //   req.body.password = hashedPassword;
+    //   console.log("hashed password is : ", hashedPassword); //here we just displayed the password ..we even had not manipulated anything hence
+    // });
+
+
+
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    //thing i have to remember is that when we are usign the bcrypt then it can return both a promise as well as callback.
+    //since  await bcrypt.hash(password, 10, function (err, hash) {....} is callback, a promise then await use is no mean hence
+    // either return a promise  or remove the "await" word ...
+    // if your are using promise to be returned then we have to use the word await in this
+  
+    //bcrypt.hash() is asynchronous
+    // •	It does NOT return a value directly.
+    // •	Instead, it executes the callback later, once hashing is complete.
+
+    const user = new User({
+      firstName,
+      lastName,
+      mobileNumber,
+      email,
+      age,
+      gender,
+      password: passwordHash,
+    });
+
     await user.save();
     res.send("Yes , data is successfuly stored at the databse ...");
   } catch (err) {
     res.status(400).send("Data Failed to store: " + err.message);
   }
 });
+
+// err.message extracts the error message from the err object.
+// 	•	This ensures that only the readable string message is sent in the response.
 
 app.get("/user", async (req, res) => {
   try {

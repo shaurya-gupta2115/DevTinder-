@@ -12,7 +12,7 @@ const validateSignUpData = (req) => {
       throw new Error("Enter strong password please");
     }
   } catch (err) {
-    console.log("this did worked in validation js")
+    console.log("this did worked in validation js");
   }
 };
 
