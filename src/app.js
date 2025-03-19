@@ -200,6 +200,8 @@ const User = require("./model/user");
 const { Model } = require("mongoose");
 const { ReturnDocument } = require("mongodb");
 const { validateSignUpData } = require("./utils/validation");
+const validator = require("validator")
+const bcrypt = require("bcrypt");
 
 app.use(express.json()); //this will help me to convert json file into js object which i can use further
 
@@ -263,6 +265,47 @@ app.post("/signup", async (req, res) => {
     res.status(400).send("Data Failed to store: " + err.message);
   }
 });
+
+app.post("/login",async (req, res)=> { 
+  try {
+    //WE WILL do email sanitization 
+    const {email, password } = req.body
+
+    if(!validator.isEmail(email)){
+      // throw new Error("The email is wrong please enter correct one") //do not display whether it is present or not =  data leaking ...just say invalid credential
+      throw new Error("Enter valid e-mail "); 
+    }
+  
+    const user = await User.findOne({email : email})
+    
+    if(!user){
+      throw new Error("Invalid Credentials");
+    }
+    // console.log(user)
+
+    // there  is function to check which is bcrypt.compare() which gives true or false boolean vlaue 
+    const isPasswordValid = await bcrypt.compare(
+      password ,user.password
+    );
+
+    if(isPasswordValid){
+      // console.log("yes password is valid")
+      res.send("yes password is Correct!! --> Login Successful ")
+    }
+    else{
+      // console.log("password is not valid");
+      // return res.status(400).json({ error: "NO -> password entered is not valid" })
+      // throw new Error("Password entered is not valid")
+      throw new Error("Invalid Credential")
+    }
+  } 
+  catch (err) {
+    // console.log("Login api - catch block hit" + err.message)
+    res.status(400).send("ERROR: "+  err.message ) // ab jaha se. errror aa rha hai wo error --> err me store ho ga aur usko as a message hum user ko bhej de rhe haiii
+    // this is the logic behind ..ki waha pr throw krdoge aur yaha pr bhi throw to kya hi mtlb rhega...ye catch block haii ...agar error ho rha hai to yaha manage krna hai...yaha
+    //pr bhi error nhi maar dena haiii....to as a response send kro .jonsa error hit kiya haii then use 
+  }
+} )
 
 // err.message extracts the error message from the err object.
 // 	•	This ensures that only the readable string message is sent in the response.
