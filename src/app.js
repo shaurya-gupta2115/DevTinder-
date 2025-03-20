@@ -280,23 +280,25 @@ app.post("/login", async (req, res) => {
     const user = await User.findOne({ email: email });
 
     if (!user) {
-      throw new Error("Invalid Credentials");
+      throw new Error("Invalid Credentials" );
     }
     // console.log(user)
 
     // there  is function to check which is bcrypt.compare() which gives true or false boolean vlaue
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    // const isPasswordValid = await bcrypt.compare(password, user.password) ; //or we can do the same using the following code devised in the userSchema Model
+    const isPasswordValid = await user.validatePassword(password);
 
     if (isPasswordValid) {
       // console.log("yes password is valid")
 
       //when the password is valid then we create JWT token and the concept of cookie comes here
       //(JWT - TOKEN CREATION)::::::::::::::::::::::::::::::::::::::::::
-      const token = await jwt.sign({ _id: user._id }, "Dev@Tinder2025"); //first is the {data to be hidden} and Dev@Tinder2025 is secret key which server only know it
+      const token = await user.getJWT(); //first is the {data to be hidden} and Dev@Tinder2025 is secret key which server only know it
 
       //(ADDING TOKEN TO COOKIE and Sending response back to the user)::::::::::::::::::::::::::::::::::::
-      res.cookie("token", token); //login just injects the cookie into cookies section
+      res.cookie("token", token), { expires: new Date(Date.now() + 900000) }; //login just injects the cookie into cookies section
+      // for cookie to expire we use {expires: new Date(Date.now() + 900000)} while in JWT token expiry we write {expiresIn : "0d"}
 
       res.send("yes password is Correct!! --> Login Successful ");
     } else {
@@ -341,7 +343,7 @@ app.get("/profile", userAuth, async (req, res) => {
 
     const user = req.user;
 
-    res.send(":::::::::::; Here is your profile:::::::::::;       " + user);
+    res.send(":::::::::::; Here is your profile:::::::::::;" + user);
   } catch (err) {
     res.status(400).send("Error: " + err.message);
   }

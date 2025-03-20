@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 //defing the user  Schema
 
@@ -71,7 +73,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 8,
       validate(value) {
-        if(!validator.isStrongPassword(value)){
+        if (!validator.isStrongPassword(value)) {
           throw new Error(
             "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
           );
@@ -83,6 +85,30 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+//do nto use arrow function
+userSchema.methods.getJWT = async function () {
+  const user = this;
+
+  const token = await jwt.sign({ _id: user._id }, "Dev@Tinder2025", {
+    expiresIn: "8h",
+  });
+
+  return token;
+};
+
+userSchema.methods.validatePassword = async function (passwordEnteredByUser) {
+  const user = this;
+  const passwordHash = user.password; // this.password
+
+  // const isPasswordValid = await bcrypt.compare(password, user.password);
+  const isPasswordValid = await bcrypt.compare(
+    passwordEnteredByUser,
+    passwordHash
+  );
+
+  return isPasswordValid;
+};
 
 //creating a model ... we use here capital letter to denote that this is model
 const User = mongoose.model("User", userSchema);

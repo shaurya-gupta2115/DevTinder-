@@ -37,12 +37,10 @@ const userAuth = async (req, res, next) => {
     }
 
     //user ki information ko request ke sath attach krdiya ..ki jb bhi info chahiye hogi to hum req se user ko extract krlegne
-    
+
     req.user = user; //By assigning user to req.user, we make the authenticated user’s data available in any subsequent route handler that needs it.
     //This avoids unnecessary duplicate database queries in every request that requires user information
     next();
-
-
   } catch (err) {
     res.status(400).send("Error got:" + err.message);
   }
