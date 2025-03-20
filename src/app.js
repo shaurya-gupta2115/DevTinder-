@@ -200,10 +200,14 @@ const User = require("./model/user");
 const { Model } = require("mongoose");
 const { ReturnDocument } = require("mongodb");
 const { validateSignUpData } = require("./utils/validation");
-const validator = require("validator")
+const validator = require("validator");
+const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth");
 
 app.use(express.json()); //this will help me to convert json file into js object which i can use further
+app.use(cookieParser()); //abhi tk hum cookie aa rhi thi woo hum read nhi kr paa rhe the in profile request jb ho rhi thi ...but ab humne install kr liya haiii and we can now read the cookie which is being coming when requested by the client
 
 app.post("/signup", async (req, res) => {
   // console.log(req.body)
@@ -215,6 +219,8 @@ app.post("/signup", async (req, res) => {
   // });
 
   try {
+    // const bcrypt = require("bcrypt"); //module imported
+
     //validation of data from the signup given by the user
     validateSignUpData(req);
 
@@ -225,8 +231,6 @@ app.post("/signup", async (req, res) => {
     //encrypting the password entered by the user
     // we use bcrypt algorithm to encrypt the password
 
-    const bcrypt = require("bcrypt"); //module imported
-
     // bcrypt.hash(password, 10, function (err, hashedPassword) {
     //   if (err) {
     //     console.log("error generating the hash function ");
@@ -235,16 +239,13 @@ app.post("/signup", async (req, res) => {
     //   console.log("hashed password is : ", hashedPassword); //here we just displayed the password ..we even had not manipulated anything hence
     // });
 
-
-
-
     const passwordHash = await bcrypt.hash(password, 10);
 
     //thing i have to remember is that when we are usign the bcrypt then it can return both a promise as well as callback.
     //since  await bcrypt.hash(password, 10, function (err, hash) {....} is callback, a promise then await use is no mean hence
     // either return a promise  or remove the "await" word ...
     // if your are using promise to be returned then we have to use the word await in this
-  
+
     //bcrypt.hash() is asynchronous
     // •	It does NOT return a value directly.
     // •	Instead, it executes the callback later, once hashing is complete.
@@ -266,46 +267,85 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.post("/login",async (req, res)=> { 
+app.post("/login", async (req, res) => {
   try {
-    //WE WILL do email sanitization 
-    const {email, password } = req.body
+    //WE WILL do email sanitization
+    const { email, password } = req.body;
 
-    if(!validator.isEmail(email)){
+    if (!validator.isEmail(email)) {
       // throw new Error("The email is wrong please enter correct one") //do not display whether it is present or not =  data leaking ...just say invalid credential
-      throw new Error("Enter valid e-mail "); 
+      throw new Error("Enter valid e-mail ");
     }
-  
-    const user = await User.findOne({email : email})
-    
-    if(!user){
+
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
       throw new Error("Invalid Credentials");
     }
     // console.log(user)
 
-    // there  is function to check which is bcrypt.compare() which gives true or false boolean vlaue 
-    const isPasswordValid = await bcrypt.compare(
-      password ,user.password
-    );
+    // there  is function to check which is bcrypt.compare() which gives true or false boolean vlaue
 
-    if(isPasswordValid){
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (isPasswordValid) {
       // console.log("yes password is valid")
-      res.send("yes password is Correct!! --> Login Successful ")
-    }
-    else{
+
+      //when the password is valid then we create JWT token and the concept of cookie comes here
+      //(JWT - TOKEN CREATION)::::::::::::::::::::::::::::::::::::::::::
+      const token = await jwt.sign({ _id: user._id }, "Dev@Tinder2025"); //first is the {data to be hidden} and Dev@Tinder2025 is secret key which server only know it
+
+      //(ADDING TOKEN TO COOKIE and Sending response back to the user)::::::::::::::::::::::::::::::::::::
+      res.cookie("token", token); //login just injects the cookie into cookies section
+
+      res.send("yes password is Correct!! --> Login Successful ");
+    } else {
       // console.log("password is not valid");
       // return res.status(400).json({ error: "NO -> password entered is not valid" })
       // throw new Error("Password entered is not valid")
-      throw new Error("Invalid Credential")
+      throw new Error("Invalid Credential");
     }
-  } 
-  catch (err) {
+  } catch (err) {
     // console.log("Login api - catch block hit" + err.message)
-    res.status(400).send("ERROR: "+  err.message ) // ab jaha se. errror aa rha hai wo error --> err me store ho ga aur usko as a message hum user ko bhej de rhe haiii
+    res.status(400).send("ERROR: " + err.message); // ab jaha se. errror aa rha hai wo error --> err me store ho ga aur usko as a message hum user ko bhej de rhe haiii
     // this is the logic behind ..ki waha pr throw krdoge aur yaha pr bhi throw to kya hi mtlb rhega...ye catch block haii ...agar error ho rha hai to yaha manage krna hai...yaha
-    //pr bhi error nhi maar dena haiii....to as a response send kro .jonsa error hit kiya haii then use 
+    //pr bhi error nhi maar dena haiii....to as a response send kro .jonsa error hit kiya haii then use
   }
-} )
+});
+
+app.get("/profile", userAuth, async (req, res) => {
+  try {
+    // const cookies = req.cookies; //extracting cookies from the req section
+    // console.log(cookies); //this gives undefined as cookies can be read ..for this we need cookie-parser npm package
+    // const { token } = cookies; //extracting token from the cookies
+
+    // //validate my token ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::]
+
+    // //ab profile chahne ke liye jb bhi client request bhejega ..to cookie se token bhi aaega jo hum recive kraaenge
+    // //ab jo token aa rha hai use varify bhi to krna pdega jo token login krte time create hua tha usse
+
+    // const decodedMessage = await jwt.verify(token, "Dev@Tinder2025");
+    // const { _id } = decodedMessage;
+    // console.log(decodedMessage );
+    // console.log(" logged in user id: " + _id);
+
+    // const user = await User.findById(_id)
+
+    // if(!user){
+    //   throw new Error("User do not exist ")
+    // }
+    // console.log(user)
+
+    // here for all verification of the token at every api we are going to use token-verification through middleware "userAuth"
+    // userAuth(); // calling the userAuth function  which is wrong
+
+    const user = req.user;
+
+    res.send(":::::::::::; Here is your profile:::::::::::;       " + user);
+  } catch (err) {
+    res.status(400).send("Error: " + err.message);
+  }
+});
 
 // err.message extracts the error message from the err object.
 // 	•	This ensures that only the readable string message is sent in the response.
