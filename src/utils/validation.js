@@ -33,7 +33,13 @@ const validateEditProfileData = (req) => {
   return isEditAllowed;
 };
 
+const validatePassword = (req) => {
+  isPasswordValid = validator.isStrongPassword(req.body.password);
+  return isPasswordValid;
+};
+
 module.exports = {
   validateSignUpData,
   validateEditProfileData,
+  validatePassword
 };
