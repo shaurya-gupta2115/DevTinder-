@@ -20,6 +20,7 @@ const userAuth = async (req, res, next) => {
     // reading the cookie from the req
     const { token } = req.cookies;
 
+    
     //if token is not present
     if (!token) {
       throw new Error("Token is not present ");
