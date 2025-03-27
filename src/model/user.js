@@ -7,6 +7,17 @@ const bcrypt = require("bcrypt");
 
 // Notice above that if a property only requires a type, it can be specified using a shorthand notation (contrast the lastName, firstName property above with the date property).
 
+
+
+// userSchema.index({ firstName: 1, lastName: 1 }); // Optimizes searches like { firstName: "John", lastName: "Doe" }
+// userSchema.index({ email: 1 }); // 1 for ascending order index
+// userSchema.index({ about: "text" }); // Allows text search on 'about' field
+
+// const sessionSchema = new mongoose.Schema({
+//   createdAt: { type: Date, default: Date.now, expires: "1d" }, // Auto-delete after 1 day
+// });
+
+
 const userSchema = new mongoose.Schema(
   {
     firstName: {
