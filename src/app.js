@@ -203,7 +203,7 @@ const { Model } = require("mongoose");
 const { ReturnDocument } = require("mongodb");
 const validator = require("validator");
 const cookieParser = require("cookie-parser");
-
+const {userAuth} = require("./middlewares/auth")
 app.use(express.json()); //this will help me to convert json file into js object which i can use further
 app.use(cookieParser()); //abhi tk hum cookie aa rhi thi woo hum read nhi kr paa rhe the in profile request jb ho rhi thi ...but ab humne install kr liya haiii and we can now read the cookie which is being coming when requested by the client
 
@@ -213,10 +213,12 @@ app.use(cookieParser()); //abhi tk hum cookie aa rhi thi woo hum read nhi kr paa
 const profile = require("./routes/profile");
 const authRouter = require("./routes/auth");
 const requestsRouter = require("./routes/request");
+const userRouter = require("./routes/user")
 
 app.use("/", authRouter)
 app.use("/", profile)
 app.use("/",requestsRouter)
+app.use("/", userRouter)
 
 // #################################################################################################
 

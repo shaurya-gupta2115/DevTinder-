@@ -82,8 +82,10 @@ requestsRouter.post(
     }
   }
 );
+
+
 requestsRouter.post(
-  "/request/send/:status/:requestId",
+  "/request/review/:status/:requestId",
   userAuth,
   async (req, res) => {
     try {
@@ -132,5 +134,7 @@ requestsRouter.post(
     }
   }
 );
+
+
 
 module.exports = requestsRouter;
