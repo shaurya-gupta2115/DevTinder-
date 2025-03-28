@@ -82,5 +82,55 @@ requestsRouter.post(
     }
   }
 );
+requestsRouter.post(
+  "/request/send/:status/:requestId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const loggedInUser = req.user; //getting from the userAuth
+
+      const { requestId, status } = req.params;
+
+      const allowedStatus = ["accepted", "rejected"];
+
+      if (!allowedStatus.includes(status)) {
+        throw new Error("Invalid status type in request post");
+      }
+
+      //checking whether this connection requestId is present in this ConnectionRequest databases or not
+      // const isRequestValid = await ConnectionRequest.findOne({ requestId });
+      // if (!isRequestValid) {
+      //   throw new Error("The request is not present in Request Database");
+      // }
+
+      //this is also held by this following connection request because it is
+      // returning if _id != requestId,
+
+      const connectionRequest = await ConnectionRequest.findOne({
+        _id: requestId,
+        toUserId: loggedInUser._id,
+        status: "interested",
+      });
+      if (!connectionRequest) {
+        return res.status(400).json({
+          message: "Connection request not found",
+        });
+      }
+
+      connectionRequest.status = status; // yaha pr jo interested wala status the use accepted ya rejected me chala jaega
+      //abhi yaha pr accepted wala scene hai to wo status = accepted ho jaega
+
+      const data = connectionRequest.save();
+      res.json({
+        message: "Connection Request " + status,
+        data,
+      });
+    } catch (err) {
+      res
+        .status(400)
+        .json({ message: `error happened in request if post route` });
+    }
+  }
+);
 
 module.exports = requestsRouter;
