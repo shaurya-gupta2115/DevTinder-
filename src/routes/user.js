@@ -11,6 +11,8 @@ const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const userRouter = express.Router();
 const ConnectionRequest = require("../model/connectionRequest");
+const { ConnectionPoolMonitoringEvent } = require("mongodb");
+const User = require("../model/user");
 // here userRouter has became router
 
 const USER_SAFE_DATA = "firstName lastName skills age gender about photoUrl";
@@ -83,6 +85,48 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
     });
   } catch (err) {
     res.status(400).send("Error is ; " + err.message);
+  }
+});
+
+userRouter.get("/feed", userAuth, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+
+    //find all connection request which are sent + received from/to loggedInUser respectively
+    const connectionRequests = await ConnectionRequest.find({
+      $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
+    }).select("fromUserId toUserId");
+    // .populate("fromUserId", "firstName lastName")
+    // .populate("toUserId", "firstName lastName");
+
+    console.log(connectionRequests);
+
+    const hideUserFromFeed = new Set();
+
+    connectionRequests.forEach((req) => {
+      hideUserFromFeed.add(req.fromUserId.toString());
+      hideUserFromFeed.add(req.toUserId.toString());
+    });
+
+    console.log(hideUserFromFeed);
+
+    // res.send(Array.from(hideUserFromFeed)); //since it is json file then we do have to convert into array otherwise it will give us an empty object
+    // res.send(connectionRequests);
+
+    const userExceptHidden = await User.find({
+      $and: [
+        { _id: { $nin: Array.from(hideUserFromFeed) } },
+        { _id: { $ne: loggedInUser._id } },
+      ],
+    }).select(USER_SAFE_DATA);
+
+    res.send(userExceptHidden);
+
+    // console.log(userExceptHidden);
+  } catch (err) {
+    res.status(400).json({
+      message: "Error: " + err.message,
+    });
   }
 });
 
