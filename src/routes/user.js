@@ -11,7 +11,6 @@ const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const userRouter = express.Router();
 const ConnectionRequest = require("../model/connectionRequest");
-const { ConnectionPoolMonitoringEvent } = require("mongodb");
 const User = require("../model/user");
 // here userRouter has became router
 
@@ -75,6 +74,7 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
       return row.fromUserId;
     });
 
+    
     // •	If loggedInUser is the sender (fromUserId), we take the receiver (toUserId).
     // •	Otherwise, if loggedInUser is the receiver (toUserId), we take the sender (fromUserId).
 

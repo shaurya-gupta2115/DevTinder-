@@ -1,6 +1,7 @@
 const express = require("express");
 const User = require("../model/user");
 const { userAuth } = require("../middlewares/auth");
+
 const {
   validateEditProfileData,
   validatePassword,
@@ -9,11 +10,11 @@ const bcrypt = require("bcrypt");
 
 const profileRouter = express.Router();
 
-profileRouter.get("/profile", userAuth, async (req, res) => {
+profileRouter.get("/profile/view", userAuth, async (req, res) => {
   try {
     const user = req.user;
 
-    res.send(":::::::::::; Here is your profile:::::::::::;" + user);
+    res.send(user);
   } catch (err) {
     res.status(400).send("Error: " + err.message);
   }
@@ -40,7 +41,7 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     // loggedInUser.firstName = req.body.firstName;
     // loggedInUser.lastName = req.body.lastName;
   } catch (err) {
-    res.status(400).send("Error is ; " + err.message);
+    res.status(400).send("Error is : " + err.message);
   }
 });
 
