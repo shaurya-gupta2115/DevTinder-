@@ -1,7 +1,7 @@
 //authRouter manages the routes for  auth from apiList.md
 
 const express = require("express");
-const validator = require("validator")
+const validator = require("validator");
 const authRouter = express.Router();
 // Unlike express(), which creates a full Express application, express.Router() is used to create modular route handler
 // This is useful for grouping related routes together (e.g., authentication-related routes inside authRouter)
@@ -9,7 +9,7 @@ const authRouter = express.Router();
 const { validateSignUpData } = require("../utils/validation");
 const bcrypt = require("bcrypt");
 const User = require("../model/user");
-const { userAuth } = require("../middlewares/auth")
+const { userAuth } = require("../middlewares/auth");
 
 authRouter.post("/signup", async (req, res) => {
   // console.log(req.body)
@@ -60,6 +60,8 @@ authRouter.post("/signup", async (req, res) => {
       age,
       gender,
       password: passwordHash,
+      photoUrl:
+        "https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0=",
     });
 
     await user.save();
@@ -102,7 +104,18 @@ authRouter.post("/login", async (req, res) => {
       res.cookie("token", token), { expires: new Date(Date.now() + 900000) }; //login just injects the cookie into cookies section
       // for cookie to expire we use {expires: new Date(Date.now() + 900000)} while in JWT token expiry we write {expiresIn : "0d"}
 
-      res.send("yes password is Correct!! --> Login Successful ");
+      // res.send("yes password is Correct!! --> Login Successful ");
+      res.send(
+        //     {
+        //     firstName: user.firstName,
+        //     lastName: user.lastName,
+        //     email: user.email,
+        //     age: user.age,
+        //     gender: user.gender,
+        //     // You can include other safe fields if needed
+        //   }
+        user
+      );
     } else {
       // console.log("password is not valid");
       // return res.status(400).json({ error: "NO -> password entered is not valid" })
@@ -117,13 +130,12 @@ authRouter.post("/login", async (req, res) => {
   }
 });
 
-authRouter.post("/logout", async (req,res) => {
-  // this is logout api 
+authRouter.post("/logout", async (req, res) => {
+  // this is logout api
   res.cookie("token", null, {
-    expires: new Date(Date.now())
-  })
+    expires: new Date(Date.now()),
+  });
   res.send("Logout is successful");
-
-})
+});
 
 module.exports = authRouter;

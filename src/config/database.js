@@ -1,4 +1,4 @@
-// //bringing mongoClient from the mongodb so that we can utilise that function to build the connection
+ // //bringing mongoClient from the mongodb so that we can utilise that function to build the connection
 // const { MongoClient } = require("mongodb");
 
 // //connect URL
@@ -72,7 +72,7 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   await mongoose.connect(
-    "mongodb+srv://devtinder:devtinder@cluster0.ggrv0.mongodb.net/devTinder" //devTinder is that database and users is a collection which contains various documents 
+    "mongodb+srv://devtinder:devtinder@cluster0.ggrv0.mongodb.net/devTinder" //devTinder is that database and users is a collection which contains various documents
   );
 };
 

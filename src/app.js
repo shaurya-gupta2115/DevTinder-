@@ -1,9 +1,8 @@
 //iin this the express module is loaded into the express variable and that express do contain various functions which
 // are written in the abstracted manner just to make function get used of it
 
-const express = require("express"); // ye ek function return krta hai 
-const app = express();// creates an express application by calling express() and new instance of an express application got created
-
+const express = require("express"); // ye ek function return krta hai
+const app = express(); // creates an express application by calling express() and new instance of an express application got created
 
 //importing auth from middlewares
 // const {auth} = require("./middlewares/auth")
@@ -37,7 +36,7 @@ const app = express();// creates an express application by calling express() and
 // })
 
 //post is subjected to store the information
-//this will only hand POST call to /first
+//this will only handle POST call to /first
 // app.post("/first" , async (req,res) => {
 //     // console.log("the data is being saved . Please wait for a moment ...")
 //     //logic to save the data on the hardware / server
@@ -203,22 +202,30 @@ const { Model } = require("mongoose");
 const { ReturnDocument } = require("mongodb");
 const validator = require("validator");
 const cookieParser = require("cookie-parser");
-const {userAuth} = require("./middlewares/auth")
+const { userAuth } = require("./middlewares/auth");
+
 app.use(express.json()); //this will help me to convert json file into js object which i can use further
 app.use(cookieParser()); //abhi tk hum cookie aa rhi thi woo hum read nhi kr paa rhe the in profile request jb ho rhi thi ...but ab humne install kr liya haiii and we can now read the cookie which is being coming when requested by the client
-
 
 // ############################################################################################
 
 const profile = require("./routes/profile");
 const authRouter = require("./routes/auth");
 const requestsRouter = require("./routes/request");
-const userRouter = require("./routes/user")
+const userRouter = require("./routes/user");
+const cors = require("cors");
 
-app.use("/", authRouter)
-app.use("/", profile)
-app.use("/",requestsRouter)
-app.use("/", userRouter)
+// here i have to use the cors as a middleware so that the cors error can be terminated
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+app.use("/", authRouter);
+app.use("/", profile);
+app.use("/", requestsRouter);
+app.use("/", userRouter);
 
 // #################################################################################################
 
@@ -227,9 +234,9 @@ connectDB()
     console.log("Database connection established Succesfully ");
     //here we connected database first and then server started listening it after
     app.listen(7777, () => {
-      console.log("server is running and listening the request...");
+      console.log("server is running and listening the request... 7777");
     });
   })
   .catch((err) => {
-    console.log("Error while connecting to get the database ");
+    console.log("Error while connecting to get the database ", err);
   });

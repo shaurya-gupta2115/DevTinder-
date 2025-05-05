@@ -20,22 +20,22 @@ const userAuth = async (req, res, next) => {
     // reading the cookie from the req
     const { token } = req.cookies;
 
-    
     //if token is not present
     if (!token) {
-      throw new Error("Token is not present ");
+      return res.status(401).json("You are not loggedIn...");
     }
 
     //verify the cookie for the session
-    const decodedObj = await jwt.verify(token, "Dev@Tinder2025");
+    const decodedObj = await jwt.verify(token, "Dev@Tinder2025"); //ye payload deta haii like jo tum info dete ho during login wo deta hai yaha pr
 
     //find the user
     const { _id } = decodedObj;
     const user = await User.findById(_id);
 
-    if (!user) {
-      throw new Error("User not found");
-    }
+    // if (!user) {
+    //   throw new Error("User not found");
+    // }
+    if (!user) return res.status(404).send("User not found");
 
     //user ki information ko request ke sath attach krdiya ..ki jb bhi info chahiye hogi to hum req se user ko extract krlegne
 
