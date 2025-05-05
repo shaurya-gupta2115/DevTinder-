@@ -241,5 +241,5 @@ connectDB()
     });
   })
   .catch((err) => {
-    console.log("Error while connecting to get the database ");
+    console.log("Error while connecting to get the database ",err);
   });

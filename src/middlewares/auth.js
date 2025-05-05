@@ -26,7 +26,7 @@ const userAuth = async (req, res, next) => {
     }
 
     //verify the cookie for the session
-    const decodedObj = await jwt.verify(token, "Dev@Tinder2025");
+    const decodedObj = await jwt.verify(token, "Dev@Tinder2025"); //ye payload deta haii like jo tum info dete ho during login wo deta hai yaha pr
 
     //find the user
     const { _id } = decodedObj;

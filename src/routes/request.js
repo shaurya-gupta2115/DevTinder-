@@ -24,11 +24,10 @@ requestsRouter.post(
         throw new Error("The request is not allowed to proceed ");
       }
 
-      //to avoid duplicacy and same request from the another user i have to ma ke the checksto avoid thi s
+      //to avoid duplicacy and same request from the another user i have to make the checks to avoid this
       const existingConnectionRequest = await ConnectionRequest.findOne({
         $or: [
           { fromUserId, toUserId }, //this avoids to send duplicate request to the same user
-
           { fromUserId: toUserId, toUserId: fromUserId }, // this denies second user to send request back the the person who has sent the request iniitially to him
         ],
       });

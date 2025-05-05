@@ -60,6 +60,8 @@ authRouter.post("/signup", async (req, res) => {
       age,
       gender,
       password: passwordHash,
+      photoUrl:
+        "https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0=",
     });
 
     await user.save();
@@ -104,16 +106,16 @@ authRouter.post("/login", async (req, res) => {
 
       // res.send("yes password is Correct!! --> Login Successful ");
       res.send(
-    //     {
-    //     firstName: user.firstName,
-    //     lastName: user.lastName,
-    //     email: user.email,
-    //     age: user.age,
-    //     gender: user.gender,
-    //     // You can include other safe fields if needed
-    //   }
-    user
-    );
+        //     {
+        //     firstName: user.firstName,
+        //     lastName: user.lastName,
+        //     email: user.email,
+        //     age: user.age,
+        //     gender: user.gender,
+        //     // You can include other safe fields if needed
+        //   }
+        user
+      );
     } else {
       // console.log("password is not valid");
       // return res.status(400).json({ error: "NO -> password entered is not valid" })
