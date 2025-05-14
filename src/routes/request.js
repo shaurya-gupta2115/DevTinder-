@@ -4,6 +4,8 @@ const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../model/connectionRequest");
 const User = require("../model/user");
 
+const sendEmail = require("../utils/sendEmail");
+
 requestsRouter.post(
   "/request/send/:status/:toUserId",
   userAuth,
@@ -72,6 +74,9 @@ requestsRouter.post(
 
       const data = await connectionRequest.save();
 
+      const emailRes = await sendEmail.run();
+      console.log(emailRes);
+      
       res.json({
         message: `${user.firstName} sent the status ${status} request`,
         data,
@@ -81,7 +86,6 @@ requestsRouter.post(
     }
   }
 );
-
 
 requestsRouter.post(
   "/request/review/:status/:requestId",
@@ -133,7 +137,5 @@ requestsRouter.post(
     }
   }
 );
-
-
 
 module.exports = requestsRouter;

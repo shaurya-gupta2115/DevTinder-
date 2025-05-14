@@ -3,7 +3,7 @@
 
 const express = require("express"); // ye ek function return krta hai
 const app = express(); // creates an express application by calling express() and new instance of an express application got created
-
+require("dotenv").config()
 //importing auth from middlewares
 // const {auth} = require("./middlewares/auth")
 
@@ -233,7 +233,7 @@ connectDB()
   .then(() => {
     console.log("Database connection established Succesfully ");
     //here we connected database first and then server started listening it after
-    app.listen(7777, () => {
+    app.listen(process.env.PORT, () => {
       console.log("server is running and listening the request... 7777");
     });
   })

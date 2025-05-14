@@ -65,14 +65,14 @@
 // ################################### - > Mongoose Implementation and Learnings < - ##################################
 
 const mongoose = require("mongoose");
-
+require("dotenv").config();
 // mongoose.connect(
 //   "mongodb+srv://devtinder:devtinder@cluster0.ggrv0.mongodb.net/"
 // );
 
 const connectDB = async () => {
   await mongoose.connect(
-    "mongodb+srv://devtinder:devtinder@cluster0.ggrv0.mongodb.net/devTinder" //devTinder is that database and users is a collection which contains various documents
+    process.env.MONGO_URI //devTinder is that database and users is a collection which contains various documents
   );
 };
 
